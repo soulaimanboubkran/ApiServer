@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Shop;
 use App\Http\Requests\StoreShopRequest;
 use App\Http\Requests\UpdateShopRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller
 {
@@ -27,9 +29,23 @@ class ShopController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreShopRequest $request)
+    public function store(Request $request)
     {
-        //
+        try {
+            $request->validate([
+                'name' => 'required',
+               
+                'description' => 'nullable',
+
+            ]);
+
+            $user = Auth::user();
+            $shop = $user->shop()->create($request->all());
+
+            return response()->json(['shop' => $shop], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**

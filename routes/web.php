@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
+use TCG\Voyager\Facades\Voyager;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('/cars',PostController::class);
+
+Route::group(['prefix' => 'admin'], function () {
+    Voyager::routes();
+});
