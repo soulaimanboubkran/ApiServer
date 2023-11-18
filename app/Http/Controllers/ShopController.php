@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shop;
-use App\Http\Requests\StoreShopRequest;
 use App\Http\Requests\UpdateShopRequest;
+use App\Mail\ShopActivationRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class ShopController extends Controller
 {
@@ -32,17 +34,28 @@ class ShopController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
+         $request->validate([
                 'name' => 'required',
                
                 'description' => 'nullable',
 
             ]);
-
             $user = Auth::user();
+              // Check if the user already has a shop
+    if ($user->shop) {
+        // User already has a shop, handle the error as needed
+        return response()->json(['error' => 'You can have only one shop.'], 422);
+    }
             $shop = $user->shop()->create($request->all());
 
-            return response()->json(['shop' => $shop], 201);
+            $admins = User::whereHas('role', function ($q) {
+                $q->where('name','admin');
+            })->get();
+            Mail::to($admins)->send(new ShopActivationRequest($shop));
+
+
+
+         return response()->json(['shop' => $shop], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
