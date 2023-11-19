@@ -30,11 +30,11 @@ Route::post('/car',[PostController::class,'store']);
 
 Route::post('/category',[CategoryController::class,'store']);
 Route::get('/categories',[CategoryController::class,'index']);
-Route::get('/shops',[ShopController::class,'index']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/category',[CategoryController::class,'store']);
     Route::get('/categories',[CategoryController::class,'index']);
-
+    Route::get('/shops',[ShopController::class,'index']);
     Route::post('/shop',[ShopController::class,'store']);
     });

@@ -6,61 +6,65 @@ use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
+
 class ShopPolicy
 {
+
+
+    public function before($user, $ability)
+    {
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+    }
+
+    public function browse(User $user)
+    {
+        return $user->hasRole('seller');
+    }
+
+
+    public function read(User $user, Shop $shop)
+    {
+        return $user->id == $shop->user_id;
+    }
+
     /**
-     * Determine whether the user can view any models.
+     * Determine whether the user can update the shop.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Shop  $shop
+     * @return mixed
      */
-    public function viewAny(User $user): bool
+    public function edit(User $user, Shop $shop)
+    {
+
+        return $user->id == $shop->user_id;
+    }
+
+
+    /**
+     * Determine whether the user can create shops.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function add(User $user)
     {
         //
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Determine whether the user can delete the shop.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Shop  $shop
+     * @return mixed
      */
-    public function view(User $user, Shop $shop): bool
+    public function delete(User $user, Shop $shop)
     {
-        //
+        return $user->id == $shop->user_id;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        //
-    }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Shop $shop): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Shop $shop): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Shop $shop): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Shop $shop): bool
-    {
-        //
-    }
 }
